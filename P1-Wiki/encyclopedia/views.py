@@ -10,4 +10,6 @@ def index(request):
 
 def open(request, name):
     return render(request, "entry/index.html", {
+        "title": name,
+        "desc": util.get_entry(name)
     })
