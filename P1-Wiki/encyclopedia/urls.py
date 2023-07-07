@@ -28,6 +28,8 @@ urlpatterns = [
     # list of url patterns that a user might visit while using our website
     # if path = ""; run views.index
     path("", views.index, name="index"),
-    path("<str:name>", views.open, name="open")
+    path("<str:entry>", views.open, name="open"),
+    path("<str:input>", views.search, name="search")
+
 
 ]

@@ -13,7 +13,14 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def open(request, name):
+def open(request, entry):
+    return render(request, "encyclopedia/entry.html", {
+        "title": entry,
+        "desc": util.get_entry(entry)
+    })
+
+
+def search(request, text):
     return render(request, "encyclopedia/entry.html", {
         "title": name,
         "desc": util.get_entry(name)
