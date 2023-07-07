@@ -16,7 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+
+""" 
+Process: When we access the URL (http://127.0.0.1:8000/) django checks what comes after the 
+    base URL and searches this file for for that pattern. 
+
+EX: if pattern = '' (base URL only) => path('', include("encyclopedia.urls")) then:
+    Include all of the paths from the urls.py file within our application so
+    when a user visits our site they’ll be redirected to the paths inside of our application.
+"""
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("encyclopedia.urls"))
+    path('', include("encyclopedia.urls")) 
 ]
