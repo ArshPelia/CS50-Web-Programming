@@ -1,5 +1,5 @@
+# views.py
 from django.shortcuts import render
-
 from . import util
 
 """ 
@@ -22,18 +22,22 @@ def open(request, entry):
     })
 
 
-def search(request, text):
-    if util.get_entry(text) is not None:
-        return render(request, "encyclopedia/entry.html", {
-            "title": text,
-            "desc": util.get_entry(text)
-        })
-    
-    else:
-        entries = util.list_entries()
-        matches = res = [i for i in entries if text in i]
-        return render(request, "encyclopedia/index.html", {
-            "title": 'Search',
-            "heading": 'Search Results',
-            "entries": matches,
-        })
+def search(request):
+    if request.method == 'POST':
+        text = request.POST['q']
+        print('searching')
+        if util.get_entry(text) is not None:
+            return render(request, "encyclopedia/entry.html", {
+                "title": text,
+                "heading": 'All Pages',
+                "desc": util.get_entry(text)
+            })
+        
+        else:
+            entries = util.list_entries()
+            matches = [entry for entry in entries if text.lower() in entry.lower()]
+            return render(request, "encyclopedia/index.html", {
+                "title": 'Search',
+                "heading": 'Search Results',
+                "entries": matches,
+            })

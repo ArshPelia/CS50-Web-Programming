@@ -1,3 +1,4 @@
+# urls.py
 from django.urls import path # give us the ability to reroute URLSs
 from . import views # import any functions we’ve created in views.py.
 
@@ -24,12 +25,11 @@ from . import views # import any functions we’ve created in views.py.
 """
 
 app_name = "encyclopedia"
+# list of url patterns that a user might visit while using our website
+# if path = ""; run views.index
 urlpatterns = [ 
-    # list of url patterns that a user might visit while using our website
-    # if path = ""; run views.index
     path("", views.index, name="index"),
-    path("<str:entry>", views.open, name="open"),
-    path("<str:input>", views.search, name="search")
-
-
+    path("search/", views.search, name="search"),
+    path("<str:entry>", views.open, name="open")
 ]
+
