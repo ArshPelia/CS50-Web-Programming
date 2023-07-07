@@ -29,7 +29,8 @@ app_name = "encyclopedia"
 # if path = ""; run views.index
 urlpatterns = [ 
     path("", views.index, name="index"),
+    path("<str:entry>", views.open, name="open"),
     path("search/", views.search, name="search"),
-    path("<str:entry>", views.open, name="open")
+    path("add/", views.add, name="add"),
 ]
 
