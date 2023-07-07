@@ -28,10 +28,6 @@ urlpatterns = [
     # list of url patterns that a user might visit while using our website
     # if path = ""; run views.index
     path("", views.index, name="index"),
-    # path("", views.css, name="css"),
-    # path("", views.django, name="django"),
-    # path("", views.git, name="git"),
-    # path("", views.html, name="html"),
-    # path("", views.python, name="python")
+    path("<str:name>", views.open, name="open")
 
 ]
