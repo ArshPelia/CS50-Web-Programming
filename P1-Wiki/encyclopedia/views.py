@@ -10,6 +10,8 @@ we pass a third argument into the render function here, one that is known as the
  """
 def index(request):
     return render(request, "encyclopedia/index.html", {
+        "title": 'Search',
+        "heading": 'All Pages',
         "entries": util.list_entries()
     })
 
@@ -21,7 +23,17 @@ def open(request, entry):
 
 
 def search(request, text):
-    return render(request, "encyclopedia/entry.html", {
-        "title": name,
-        "desc": util.get_entry(name)
-    })
+    if util.get_entry(text) is not None:
+        return render(request, "encyclopedia/entry.html", {
+            "title": text,
+            "desc": util.get_entry(text)
+        })
+    
+    else:
+        entries = util.list_entries()
+        matches = res = [i for i in entries if text in i]
+        return render(request, "encyclopedia/index.html", {
+            "title": 'Search',
+            "heading": 'Search Results',
+            "entries": matches,
+        })
