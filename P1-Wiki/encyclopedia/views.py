@@ -14,7 +14,7 @@ def index(request):
     })
 
 def open(request, name):
-    return render(request, "entry/index.html", {
+    return render(request, "encyclopedia/entry.html", {
         "title": name,
         "desc": util.get_entry(name)
     })

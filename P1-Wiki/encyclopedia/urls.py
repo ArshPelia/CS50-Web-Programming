@@ -23,7 +23,7 @@ from . import views # import any functions we’ve created in views.py.
 
 """
 
-
+app_name = "encyclopedia"
 urlpatterns = [ 
     # list of url patterns that a user might visit while using our website
     # if path = ""; run views.index
