@@ -3,12 +3,15 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
-from .models import User
+from .models import User, Listing, Comment
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.all()
+    })
 
 """ 
 renders a login form when a user tries to GET the page
@@ -71,14 +74,51 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+class NewListingForm(forms.Form):
+    categories = [('f', 'fashion'), ('t', 'toys'), ('e', 'electronics'), ('h', 'home')]
+    name = forms.CharField(label="Name", max_length=50)
+    desc = forms.CharField(label="Description", widget=forms.Textarea())
+    startPrice = forms.DecimalField(decimal_places=2, max_digits=6)
+    imgURL = forms.URLField()
+    cat = forms.ChoiceField(choices = categories)
+    
 def create_listing(request):
     if request.method == "POST":
-        id = request.POST["id"]
-        uid = request.POST["uid"]
-        name = request.POST["name"]
-        desc = request.POST["desc"]
-        initBid = request.POST["initBid"]
-        img_url = request.POST["img_url"]
-        cat = request.POST["cat"]
+        
+        # Take in the data the user submitted and save it as form
+        form = NewListingForm(request.POST)
+        
+        if form.is_valid():
+            author = request.user
+            name = form.cleaned_data["name"]
+            desc = form.cleaned_data["desc"]
+            startPrice = form.cleaned_data["startPrice"]
+            imgURL = form.cleaned_data["imgURL"]
+            cat = form.cleaned_data["cat"]
 
+            #Add the new entry to our list of entrys
+            try: 
+                newList = Listing.objects.create(author = author, name = name, desc = desc, startPrice = startPrice, curBid = 0.00, active = True, imgURL = imgURL, cat = cat)
+                newList.save()
+            # check for duplicate
+            except IntegrityError:
+                return render(request, "auctions/create.html", {
+                "message": "Listing Name already taken."
+            })
+
+            # Redirect user to list of entrys
+            return HttpResponseRedirect(reverse("create_listing"))
+
+        else:
+            # If the form is invalid, re-render the page with existing information.
+            return render(request, "auctions/create.html", {
+                "form": form,
+                "heading": 'Create Listing'
+            })
+    else:
+        return render(request, "auctions/create.html", {
+            "form": NewListingForm(),
+            "heading": 'Create Listing'
+        })
+    
         

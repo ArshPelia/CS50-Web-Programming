@@ -2,6 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 """ 
+
+Models represent SQL tables that django will maintain in db.sqlite3
+
 each time you change anything in auctions/models.py, you’ll need to first run 
         python manage.py makemigrations 
     and then 
@@ -11,6 +14,9 @@ each time you change anything in auctions/models.py, you’ll need to first run
 RESET DB:
     rm  your_app/migrations/* 
     rm db.sqlite3
+    python manage.py makemigrations auctions
+    python manage.py makemigrations
+    python manage.py migrate
 
 """
 
@@ -29,11 +35,13 @@ class User(AbstractUser):
 
 class Listing(models.Model):
     id = models.IntegerField(primary_key=True)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     desc = models.CharField(max_length=250, default='DESCRIPTION')
-    initBid = models.DecimalField(decimal_places=2, max_digits=6)
-    img_url = models.URLField(blank=True, default='')
+    startPrice = models.DecimalField(decimal_places=2, max_digits=6)
+    curBid = models.DecimalField(decimal_places=2, max_digits=6)
+    active = models.BooleanField(default='TRUE')
+    imgURL = models.URLField(blank=True, default='')
     cat = models.CharField(max_length=1, choices=categories, blank=True, default='')
 
     def __str__(self):
@@ -42,18 +50,18 @@ class Listing(models.Model):
 class Bid(models.Model):
     id = models.IntegerField(primary_key=True)
     lid = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(decimal_places=2, max_digits=6)
 
     def __str__(self):
-        return f"BID: {self.id} LID: {self.lid} UID: {self.uid} Amount: {self.amount}"
+        return f"BID: {self.id} LID: {self.lid} user: {self.author} Amount: {self.amount}"
 
 
-class Comment():
+class Comment(models.Model):
     id = models.IntegerField(primary_key=True)
     lid = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=128)
     
     def __str__(self):
-        return f"BID: {self.id} LID: {self.lid} UID: {self.uid} Text: {self.text}"
+        return f"BID: {self.id} LID: {self.lid} user: {self.author} Text: {self.text}"
