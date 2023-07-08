@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from . import util
 import markdown2
+import random
 
 
 
@@ -133,3 +134,8 @@ def edit(request, entry):
         "form": form
     })
 
+def randomPage(request):
+    entry = random.choice(util.list_entries())
+    return render(request, "encyclopedia/randomPage.html", {
+        "entry":  entry
+    })
