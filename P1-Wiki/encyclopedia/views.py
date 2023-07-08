@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from . import util
+import markdown2
 
 
 
@@ -21,9 +22,16 @@ def index(request):
     })
 
 def open(request, entry):
+    markdown_content = util.get_entry(entry)
+    if markdown_content is None:
+        return render(request, "encyclopedia/error.html", {
+            "message": "Entry not found"
+        })
+
+    html_content = markdown2.markdown(markdown_content)
     return render(request, "encyclopedia/entry.html", {
         "title": entry,
-        "desc": util.get_entry(entry)
+        "desc": html_content
     })
 
 def search(request):
