@@ -27,14 +27,10 @@ categories = [('f', 'fashion'), ('t', 'toys'), ('e', 'electronics'), ('h', 'home
 class User(AbstractUser):
     # inherits from AbstractUser, it will already have fields for a username, email, password
     
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=64)
-    
     def __str__(self):
-        return f"USER: {self.id}: {self.name}"
+        return f"USER: {self.id}: {self.username}"
 
 class Listing(models.Model):
-    id = models.IntegerField(primary_key=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     desc = models.CharField(max_length=250, default='DESCRIPTION')
@@ -48,7 +44,6 @@ class Listing(models.Model):
         return f"LISTING: {self.id}: {self.name}"
 
 class Bid(models.Model):
-    id = models.IntegerField(primary_key=True)
     lid = models.ForeignKey(Listing, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(decimal_places=2, max_digits=6)
@@ -58,7 +53,6 @@ class Bid(models.Model):
 
 
 class Comment(models.Model):
-    id = models.IntegerField(primary_key=True)
     lid = models.ForeignKey(Listing, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=128)
