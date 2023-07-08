@@ -5,12 +5,12 @@
     <ul>
         {% for listing in listings %}
             <li>
-                Listing {{ listing.id }}: {{ listing.name }} {{ listing.destination }}
+                <a href="{% url 'open_listing' listid=listing.id %}">{{ listing.name }}</a>
                 <ul>
                     <li>Author: {{listing.author}}</li>
                     <li>Description: {{listing.desc}}</li>
                     <li>Initial Bid: {{listing.startPrice}}</li>
-                    <li>imgURL: {{listing.imgURL}}</li>
+                    <!-- <li>imgURL: {{listing.imgURL}}</li> -->
                     <li>Category: {{listing.cat}}</li>
                     </li>
                 </ul>

@@ -10,7 +10,7 @@ from .models import User, Listing, Comment
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": Listing.objects.all().filter(active=True)
     })
 
 """ 
@@ -79,8 +79,8 @@ class NewListingForm(forms.Form):
     name = forms.CharField(label="Name", max_length=50)
     desc = forms.CharField(label="Description", widget=forms.Textarea())
     startPrice = forms.DecimalField(decimal_places=2, max_digits=6)
-    imgURL = forms.URLField()
-    cat = forms.ChoiceField(choices = categories)
+    imgURL = forms.URLField(required= False)
+    cat = forms.ChoiceField(choices = categories, required=False, initial='' )
     
 def create_listing(request):
     if request.method == "POST":
@@ -121,4 +121,23 @@ def create_listing(request):
             "heading": 'Create Listing'
         })
     
+class OpenListForm(forms.Form):
+    bid = forms.DecimalField(decimal_places=2, max_digits=6)
+
+def open_listing(request, listid):
+    target = Listing.objects.get(id=listid)
+    return render(request, "auctions/open.html", {
+        "name": target.name,
+        "imgURL": target.imgURL,
+        "startPrice": target.startPrice,
+        "curBid": target.curBid,
+        # "bidCount": target.name,
+        "author": target.author,
+        "cat": target.cat
+
         
+    })
+
+
+def place_bid(request, listing):
+    pass

@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+    <h1>Listing: {{name}}</h1>
+    <a href="#">Watchlist</a>
+    <h3>Image: {{imgURL}}</h3>
+    <p>{{name}}</p>
+    <h2>Inital Price: {{startPrice}}</h2>
+    <h3>Current Bid: {{curBid}}</h3>
+    <!-- <h4>{{bidCount}} bid(s) so far. Your bid is: TODO</h4> -->
+
+    <!-- TODO: add bidding form if user is logged in and not the ownerS -->
+
+    <h2>Details</h2>
+    <ul>
+        <li>Listed by: {{author}}</li>
+        <li>Category: {{cat}}</li>
+    </ul>
+{% endblock %}
