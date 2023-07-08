@@ -121,23 +121,50 @@ def create_listing(request):
             "heading": 'Create Listing'
         })
     
-class OpenListForm(forms.Form):
-    bid = forms.DecimalField(decimal_places=2, max_digits=6)
-
 def open_listing(request, listid):
     target = Listing.objects.get(id=listid)
     return render(request, "auctions/open.html", {
+        "listID": target.id,
         "name": target.name,
         "imgURL": target.imgURL,
         "startPrice": target.startPrice,
         "curBid": target.curBid,
         # "bidCount": target.name,
         "author": target.author,
-        "cat": target.cat
-
+        "cat": target.get_cat_display,
+        "form": OpenBidForm()
         
     })
+    
+class OpenBidForm(forms.Form):
+    bid = forms.DecimalField(label='Bid', decimal_places=2, max_digits=6)
 
+def place_bid(request, listid):
+    target = Listing.objects.get(id=listid)
 
-def place_bid(request, listing):
-    pass
+    if request.method == "POST":
+        form = OpenBidForm(request.POST)
+
+        if form.is_valid():
+            author = request.user
+            bid = form.cleaned_data["bid"]
+
+            # Update the listing with the new bid value
+            target.curBid = bid
+            target.save()
+
+            # Redirect user to the open listing page
+            return HttpResponseRedirect(reverse("open_listing", args=[listid]))
+    else:
+        form = OpenBidForm()
+
+    return render(request, "auctions/open.html", {
+        "form": form,
+        "name": target.name,
+        "imgURL": target.imgURL,
+        "startPrice": target.startPrice,
+        "curBid": target.curBid,
+        "author": target.author,
+        "cat": target.get_cat_display,
+    })
+

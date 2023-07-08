@@ -9,6 +9,14 @@
     <!-- <h4>{{bidCount}} bid(s) so far. Your bid is: TODO</h4> -->
 
     <!-- TODO: add bidding form if user is logged in and not the ownerS -->
+    {% if user.is_authenticated %}
+        <!-- <p>Place Bid: </p> -->
+        <form action="{% url 'place_bid' listid=listID %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit">
+        </form>
+    {% endif %}
 
     <h2>Details</h2>
     <ul>
