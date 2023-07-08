@@ -70,3 +70,15 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def create_listing(request):
+    if request.method == "POST":
+        id = request.POST["id"]
+        uid = request.POST["uid"]
+        name = request.POST["name"]
+        desc = request.POST["desc"]
+        initBid = request.POST["initBid"]
+        img_url = request.POST["img_url"]
+        cat = request.POST["cat"]
+
+        
