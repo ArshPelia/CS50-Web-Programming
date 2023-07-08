@@ -32,5 +32,7 @@ urlpatterns = [
     path("<str:entry>", views.open, name="open"),
     path("search/", views.search, name="search"),
     path("add/", views.add, name="add"),
+    path('edit/<str:entry>/', views.edit, name='edit'),
+
 ]
 

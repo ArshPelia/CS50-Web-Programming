@@ -1,6 +1,6 @@
 # views.py
 from django import forms
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from . import util
@@ -99,3 +99,29 @@ def add(request):
     return render(request, "encyclopedia/add.html", {
         "form": NewEntryForm()
     })
+
+class NewEditForm(forms.Form):
+    entry = forms.CharField(label="Entry", disabled=True, required=False)
+    desc = forms.CharField(label="Description", widget=forms.Textarea(attrs={'height': '90vh', 'width': '20%'}))
+
+def edit(request, entry):
+    existing_entry = util.get_entry(entry)
+    if existing_entry is None:
+        return render(request, "encyclopedia/error.html", {
+            "message": "Entry not found"
+        })
+
+    if request.method == "POST":
+        form = NewEditForm(request.POST)
+        if form.is_valid():
+            new_desc = form.cleaned_data["desc"]
+            util.save_entry(entry, new_desc)
+            return HttpResponseRedirect(reverse("encyclopedia:edit", args=[entry]))
+    else:
+        form = NewEditForm(initial={'entry': entry, 'desc': existing_entry})
+
+    return render(request, "encyclopedia/edit.html", {
+        "entry": entry,
+        "form": form
+    })
+
