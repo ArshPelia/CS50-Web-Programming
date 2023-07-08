@@ -10,7 +10,12 @@ from .models import User
 def index(request):
     return render(request, "auctions/index.html")
 
+""" 
+renders a login form when a user tries to GET the page
 
+When a user submits the form using the POST request method, 
+    the user is authenticated, logged in, and redirected to the index page
+"""
 def login_view(request):
     if request.method == "POST":
 
@@ -30,12 +35,16 @@ def login_view(request):
     else:
         return render(request, "auctions/login.html")
 
-
+""" 
+logs the user out and redirects them to the index page. 
+"""
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
-
+""" 
+displays a registration form to the user, and creates a new user when the form is submitted.
+"""
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
