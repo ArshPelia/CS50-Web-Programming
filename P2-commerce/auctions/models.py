@@ -44,7 +44,7 @@ class Listing(models.Model):
         return f"LISTING: {self.id}: {self.name}"
 
 class Bid(models.Model):
-    lid = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(decimal_places=2, max_digits=6)
 
@@ -53,7 +53,7 @@ class Bid(models.Model):
 
 
 class Comment(models.Model):
-    lid = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=128)
     

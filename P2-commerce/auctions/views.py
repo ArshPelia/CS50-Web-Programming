@@ -5,8 +5,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django import forms
+from django.contrib import messages
 
-from .models import User, Listing, Comment, Watchlist
+from .models import User, Listing, Comment, Watchlist, Bid
 
 
 def index(request):
@@ -103,9 +104,8 @@ def create_listing(request):
                 newList.save()
             # check for duplicate
             except IntegrityError:
-                return render(request, "auctions/create.html", {
-                "message": "Listing Name already taken."
-            })
+                messages.error(request,'Integrity ERROR: Listing already exists.')
+                return redirect("create_listing")
 
             # Redirect user to list of entrys
             return HttpResponseRedirect(reverse("create_listing"))
@@ -123,13 +123,6 @@ def create_listing(request):
         })
     
 def open_listing(request, listid):
-    # try: 
-    #     target = Listing.objects.get(id=listid)
-    # except Listing.DoesNotExist:
-    #     #if called from watchlist
-    #     target = listid
-    
-
     target = None
     if isinstance(listid, Listing):
         target = listid
@@ -137,7 +130,8 @@ def open_listing(request, listid):
         try:
             target = Listing.objects.get(id=listid)
         except Listing.DoesNotExist:
-            return HttpResponse("Listing not found")
+            messages.error(request,'ERROR: Listing not Found.')
+            return redirect("open_listing", listid=listid)
 
     author = request.user
     try:
@@ -174,9 +168,20 @@ def place_bid(request, listid):
             author = request.user
             bid = form.cleaned_data["bid"]
 
+            if bid <= target.curBid or bid <= target.startPrice:
+                # return render(request, "auctions/open.html", {
+                #     "message": "ERROR: Bid Must be higher than current bid & price."
+                # })
+                messages.error(request,'ERROR: Bid Must be higher than current bid & price.')
+                return redirect("open_listing", listid=listid)
+
             # Update the listing with the new bid value
             target.curBid = bid
             target.save()
+
+            #create bid record
+            new_entry = Bid.objects.create(listing=target, author=author, amount=bid)
+            new_entry.save
 
             # Redirect user to the open listing page
             return HttpResponseRedirect(reverse("open_listing", args=[listid]))
@@ -201,9 +206,8 @@ def addWatchlist(request, listid):
     try:
         watchlist_entry = Watchlist.objects.get(author=author, listing=target)
         # Entry already exists in the watchlist
-        return render(request, "auctions/open.html", {
-            "message": "Listing is already in your watchlist."
-        })
+        messages.error(request,'ERROR: Item already in watchlist.')
+        return redirect("open_listing", listid=listid)
     except Watchlist.DoesNotExist:
         # Create a new entry in the watchlist
         new_entry = Watchlist.objects.create(author=author, listing=target)
@@ -220,10 +224,9 @@ def rmWatchlist(request, listid):
         # Entry already exists in the watchlist
         watchlist_entry.delete()
     except Watchlist.DoesNotExist:
-        return render(request, "auctions/open.html", {
-            "message": "ERROR: Listing does not exist in your watchlist."
-        })
-
+        messages.error(request,'ERROR: ERROR: Item not in watchlist.')
+        return redirect("open_listing", listid=listid)
+    
     return redirect("open_listing", listid=listid)
 
 def showWatchlist(request):
