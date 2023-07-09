@@ -83,7 +83,8 @@ class NewListingForm(forms.Form):
     startPrice = forms.DecimalField(decimal_places=2, max_digits=6)
     imgURL = forms.URLField(required= False)
     cat = forms.ChoiceField(choices = categories, required=False, initial='' )
-    
+
+@login_required(login_url='login') # ensure that only a user who is logged in can access that view.
 def create_listing(request):
     if request.method == "POST":
         
@@ -141,6 +142,9 @@ def open_listing(request, listid):
     except Watchlist.DoesNotExist:
         # Entry does not exist in the watchlist
         watchlisted = False
+
+    if target.author == author:
+        owner = True
     
     return render(request, "auctions/open.html", {
         "listID": target.id,
@@ -151,13 +155,15 @@ def open_listing(request, listid):
         "author": target.author,
         "cat": target.get_cat_display,
         "form": OpenBidForm(),
-        "watchlisted": watchlisted
+        "watchlisted": watchlisted,
+        "owner": owner
     })
 
     
 class OpenBidForm(forms.Form):
     bid = forms.DecimalField(label='Bid', decimal_places=2, max_digits=6)
 
+@login_required(login_url='login') # ensure that only a user who is logged in can access that view.
 def place_bid(request, listid):
     target = Listing.objects.get(id=listid )
 
@@ -187,7 +193,9 @@ def place_bid(request, listid):
             return HttpResponseRedirect(reverse("open_listing", args=[listid]))
     else:
         form = OpenBidForm()
-
+        
+    if target.author == author:
+        owner = True
     return render(request, "auctions/open.html", {
         "form": form,
         "name": target.name,
@@ -196,9 +204,10 @@ def place_bid(request, listid):
         "curBid": target.curBid,
         "author": target.author,
         "cat": target.get_cat_display,
+        "owner": owner
     })
 
-@login_required(login_url='login')
+@login_required(login_url='login') # ensure that only a user who is logged in can access that view.
 def addWatchlist(request, listid):
     target = Listing.objects.get(id=listid)
     author = request.user
@@ -215,6 +224,7 @@ def addWatchlist(request, listid):
 
     return redirect("open_listing", listid=listid)
 
+@login_required(login_url='login') # ensure that only a user who is logged in can access that view.
 def rmWatchlist(request, listid):
     target = Listing.objects.get(id=listid)
     author = request.user
@@ -229,6 +239,7 @@ def rmWatchlist(request, listid):
     
     return redirect("open_listing", listid=listid)
 
+@login_required(login_url='login') # ensure that only a user who is logged in can access that view.
 def showWatchlist(request):
     auth = request.user
     user_watchlist = Watchlist.objects.select_related('listing').filter(author=auth)
@@ -237,3 +248,5 @@ def showWatchlist(request):
         "watchlist": user_watchlist
     })
 
+def close_listing(request, listid):
+    pass
