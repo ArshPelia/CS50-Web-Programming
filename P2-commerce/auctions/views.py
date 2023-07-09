@@ -175,3 +175,8 @@ def place_bid(request, listid):
         "cat": target.get_cat_display,
     })
 
+def addWatchlist(request):
+    pass
+
+def rmWatchlist(request):
+    pass
