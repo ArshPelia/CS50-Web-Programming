@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django import forms
 
@@ -122,26 +123,43 @@ def create_listing(request):
         })
     
 def open_listing(request, listid):
-    target = Listing.objects.get(id=listid)
+    # try: 
+    #     target = Listing.objects.get(id=listid)
+    # except Listing.DoesNotExist:
+    #     #if called from watchlist
+    #     target = listid
+    
+
+    target = None
+    if isinstance(listid, Listing):
+        target = listid
+    else:
+        try:
+            target = Listing.objects.get(id=listid)
+        except Listing.DoesNotExist:
+            return HttpResponse("Listing not found")
+
     author = request.user
-    try: 
-        watchlisted = Watchlist.objects.get(author=author, listing=target).exists()
+    try:
+        watchlist_entry = Watchlist.objects.get(author=author, listing=target)
+        # Entry exists in the watchlist
+        watchlisted = True
     except Watchlist.DoesNotExist:
+        # Entry does not exist in the watchlist
         watchlisted = False
-    watchlisted = True
+    
     return render(request, "auctions/open.html", {
         "listID": target.id,
         "name": target.name,
         "imgURL": target.imgURL,
         "startPrice": target.startPrice,
         "curBid": target.curBid,
-        # "bidCount": target.name,
         "author": target.author,
         "cat": target.get_cat_display,
         "form": OpenBidForm(),
         "watchlisted": watchlisted
-        
     })
+
     
 class OpenBidForm(forms.Form):
     bid = forms.DecimalField(label='Bid', decimal_places=2, max_digits=6)
@@ -175,8 +193,44 @@ def place_bid(request, listid):
         "cat": target.get_cat_display,
     })
 
-def addWatchlist(request):
-    pass
+@login_required(login_url='login')
+def addWatchlist(request, listid):
+    target = Listing.objects.get(id=listid)
+    author = request.user
 
-def rmWatchlist(request):
-    pass
+    try:
+        watchlist_entry = Watchlist.objects.get(author=author, listing=target)
+        # Entry already exists in the watchlist
+        return render(request, "auctions/open.html", {
+            "message": "Listing is already in your watchlist."
+        })
+    except Watchlist.DoesNotExist:
+        # Create a new entry in the watchlist
+        new_entry = Watchlist.objects.create(author=author, listing=target)
+        new_entry.save()
+
+    return redirect("open_listing", listid=listid)
+
+def rmWatchlist(request, listid):
+    target = Listing.objects.get(id=listid)
+    author = request.user
+
+    try:
+        watchlist_entry = Watchlist.objects.get(author=author, listing=target)
+        # Entry already exists in the watchlist
+        watchlist_entry.delete()
+    except Watchlist.DoesNotExist:
+        return render(request, "auctions/open.html", {
+            "message": "ERROR: Listing does not exist in your watchlist."
+        })
+
+    return redirect("open_listing", listid=listid)
+
+def showWatchlist(request):
+    auth = request.user
+    user_watchlist = Watchlist.objects.select_related('listing').filter(author=auth)
+
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": user_watchlist
+    })
+
