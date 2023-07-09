@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <h2>Active Listings</h2>
+    <ul>
+        {% for listing in listings %}
+            <li>
+                <a href="{% url 'open_listing' listid=listing.id %}">{{ listing.name }}</a>
+                <ul>
+                    <li>Author: {{listing.author.username}}</li>
+                    <li>Description: {{listing.desc}}</li>
+                    <li>Initial Price: {{listing.startPrice}}</li>
+                    <li>Current Price: {{listing.curBid}}</li>
+                    <!-- <li>imgURL: {{listing.imgURL}}</li> -->
+                    <li>Category: {{listing.cat}}</li>
+                    </li>
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
