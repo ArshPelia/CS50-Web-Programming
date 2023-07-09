@@ -59,3 +59,11 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"BID: {self.id} LID: {self.lid} user: {self.author} Text: {self.text}"
+    
+class Watchlist(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    listings = models.ManyToManyField(Listing)
+
+    def __str__(self):
+        return f"Watchlist: {self.id} User: {self.author}"
+    

@@ -7,7 +7,7 @@
             <li>
                 <a href="{% url 'open_listing' listid=listing.id %}">{{ listing.name }}</a>
                 <ul>
-                    <li>Author: {{listing.author}}</li>
+                    <li>Author: {{listing.author.username}}</li>
                     <li>Description: {{listing.desc}}</li>
                     <li>Initial Price: {{listing.startPrice}}</li>
                     <li>Current Price: {{listing.curBid}}</li>
