@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, Listing, Comment
+from .models import User, Listing, Comment, Watchlist
 
 
 def index(request):
@@ -123,6 +123,11 @@ def create_listing(request):
     
 def open_listing(request, listid):
     target = Listing.objects.get(id=listid)
+    author = request.user
+    try: 
+        watchlisted = Watchlist.objects.get(author=author, listing=target).exists()
+    except Watchlist.DoesNotExist:
+        watchlisted = False
     return render(request, "auctions/open.html", {
         "listID": target.id,
         "name": target.name,
@@ -132,7 +137,8 @@ def open_listing(request, listid):
         # "bidCount": target.name,
         "author": target.author,
         "cat": target.get_cat_display,
-        "form": OpenBidForm()
+        "form": OpenBidForm(),
+        "watchlisted": watchlisted
         
     })
     
@@ -140,7 +146,7 @@ class OpenBidForm(forms.Form):
     bid = forms.DecimalField(label='Bid', decimal_places=2, max_digits=6)
 
 def place_bid(request, listid):
-    target = Listing.objects.get(id=listid)
+    target = Listing.objects.get(id=listid )
 
     if request.method == "POST":
         form = OpenBidForm(request.POST)
