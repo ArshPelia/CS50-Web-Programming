@@ -62,7 +62,7 @@ class Comment(models.Model):
     
 class Watchlist(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    listings = models.ManyToManyField(Listing)
+    listings = models.ForeignKey(Listing, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Watchlist: {self.id} User: {self.author}"
