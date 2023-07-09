@@ -1,7 +1,12 @@
 {% extends "auctions/layout.html" %}
 {% block body %}
     <h1>Listing: {{name}}</h1>
-    <a href="#">Watchlist</a>
+    {% if watchlisted == True %}
+        <a href="#">Add to Watchlist</a>
+    {% else %}
+        <a href="#">Remove from Watchlist</a>
+    {% endif %}
+    
     <h5>Image: {{imgURL}}</h3>
     <p>{{name}}</p>
     <h4>Inital Price: {{startPrice}}</h2>

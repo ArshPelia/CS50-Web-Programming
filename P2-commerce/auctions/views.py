@@ -128,6 +128,7 @@ def open_listing(request, listid):
         watchlisted = Watchlist.objects.get(author=author, listing=target).exists()
     except Watchlist.DoesNotExist:
         watchlisted = False
+    watchlisted = True
     return render(request, "auctions/open.html", {
         "listID": target.id,
         "name": target.name,
