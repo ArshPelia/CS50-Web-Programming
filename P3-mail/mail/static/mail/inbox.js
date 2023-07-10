@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#compose-form').addEventListener('submit', send_mail);
+
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -72,5 +74,11 @@ Make a POST request to /emails, passing in values for recipients, subject, and b
 Once the email has been sent, load the user’s sent mailbox.
 */
 function send_mail(){
+  alert('sending')
+  const from = request.user.email;
+  alert('Sending Email from:' + from.value)
+  const to = document.querySelector('#compose-recipients').value;
+  const subject = document.querySelector('#compose-subject').value;
+  const body = document.querySelector('#compose-body').value;
 
 }
