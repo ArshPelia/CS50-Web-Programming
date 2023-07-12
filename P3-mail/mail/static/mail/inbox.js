@@ -64,6 +64,8 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#mail-view').style.display = 'none';
+
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -75,7 +77,7 @@ function load_mailbox(mailbox) {
       .then(response => response.json())
       .then(emails => {
         // Print emails
-        console.log(emails);
+        // console.log(emails);
   
         // Iterate over the emails array
         for (let i = 0; i < emails.length; i++) {
@@ -99,7 +101,7 @@ function load_mailbox(mailbox) {
           contentDiv.style.marginBottom = '10px';
           contentDiv.style.color = 'black'
 
-          if(read.value === true){
+          if(read === true){
             contentDiv.style.backgroundColor = 'white'
           }else{
             contentDiv.style.backgroundColor = 'gray'
@@ -124,7 +126,7 @@ function load_mailbox(mailbox) {
           // Append the contentDiv to the anchor element
           link.appendChild(contentDiv);
 
-          
+          link.addEventListener('click', () => open_email(id));
 
           // Append the contentDiv to the desired container element
           // For example, if you have a div with id "emailContainer", you can use:
@@ -137,7 +139,7 @@ function load_mailbox(mailbox) {
       .then(response => response.json())
       .then(emails => {
         // Print emails
-        console.log(emails);
+        // console.log(emails);
   
         // Iterate over the emails array
         for (let i = 0; i < emails.length; i++) {
@@ -179,6 +181,8 @@ function load_mailbox(mailbox) {
   
           // Append the contentDiv to the anchor element
           link.appendChild(contentDiv);
+          link.addEventListener('click', () => open_email(id));
+
 
           // Append the contentDiv to the desired container element
           // For example, if you have a div with id "emailContainer", you can use:
@@ -191,7 +195,7 @@ function load_mailbox(mailbox) {
       .then(response => response.json())
       .then(emails => {
         // Print emails
-        console.log(emails);
+        // console.log(emails);
   
         // Iterate over the emails array
         for (let i = 0; i < emails.length; i++) {
@@ -233,6 +237,8 @@ function load_mailbox(mailbox) {
       
               // Append the contentDiv to the anchor element
               link.appendChild(contentDiv);
+              link.addEventListener('click', () => open_email(id));
+
 
               // Append the contentDiv to the desired container element
               // For example, if you have a div with id "emailContainer", you can use:
@@ -244,6 +250,57 @@ function load_mailbox(mailbox) {
     }
 }
 
+function open_email(id) {
+  // Show the mailbox and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#mail-view').style.display = 'block';
+
+  fetch(`/emails/${id}`)
+    .then(response => response.json())
+    .then(email => {
+      // Print email
+      console.log(email);
+
+      // Get the required email information
+      const sender = email.sender;
+      const recipients = email.recipients;
+      const subject = email.subject;
+      const timestamp = email.timestamp;
+      const body = email.body;
+
+      // Create HTML elements to display the email information
+      const senderElement = document.createElement('p');
+      const recipientsElement = document.createElement('p');
+      const subjectElement = document.createElement('h2');
+      const timestampElement = document.createElement('p');
+      const bodyElement = document.createElement('div');
+
+      // Set the content of the HTML elements with the email information
+      senderElement.innerHTML = `From: ${sender}`;
+      recipientsElement.innerHTML = `To: ${recipients}`;
+      subjectElement.innerHTML = `Subject: ${subject}`;
+      timestampElement.innerHTML = `Timestamp: ${timestamp}`;
+      bodyElement.innerHTML = body;
+
+      // Append the elements to the mail-view container
+      const mailView = document.querySelector('#mail-view');
+      mailView.innerHTML = '';
+      mailView.appendChild(senderElement);
+      mailView.appendChild(recipientsElement);
+      mailView.appendChild(subjectElement);
+      mailView.appendChild(timestampElement);
+      mailView.appendChild(bodyElement);
+
+      // Mark the email as read
+      fetch(`/emails/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          read: true
+        })
+      });
+    });
+}
 
 
 /* 
