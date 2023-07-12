@@ -3,12 +3,27 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
-from .models import User
+from .models import User, Post, Profile, Like
 
 
+
+""" 
+as long as the user is signed in, this function renders the mail/inbox.html template
+
+"""
 def index(request):
-    return render(request, "network/index.html")
+
+    # Authenticated users view their inbox
+    if request.user.is_authenticated:
+        return render(request, "network/index.html")
+
+    # Everyone else is prompted to sign in
+    else:
+        return HttpResponseRedirect(reverse("login"))
 
 
 def login_view(request):
@@ -61,3 +76,16 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+
+@csrf_exempt
+@login_required
+def compose(request):
+
+    # Composing a new email must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+
+    return JsonResponse({"message": "Post created successfully."}, status=201)
