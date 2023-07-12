@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+import json
+
 
 from .models import User, Post, Profile, Like
 
@@ -86,6 +88,19 @@ def compose(request):
     # Composing a new email must be via POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
+    
+    # Check recipient post
+    data = json.loads(request.body)
+    content = data.get("content", "")
+    timestamp = data.get("content", "")
+    user = request.user
 
+    post = Post(
+        content = content,
+        timestamp = timestamp,
+        user = user
+    )
+
+    post.save()
 
     return JsonResponse({"message": "Post created successfully."}, status=201)

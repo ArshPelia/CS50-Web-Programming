@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', () => compose_email());
   document.querySelector('form').onsubmit = () => send_mail();
   
-
-
   // By default, load the inbox
   load_mailbox('inbox');
 });
@@ -301,7 +299,6 @@ function open_email(id) {
       });
     });
 }
-
 
 /* 
 When a user submits the email composition form, add JavaScript code to actually send the email.
