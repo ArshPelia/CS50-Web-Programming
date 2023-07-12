@@ -1,14 +1,18 @@
 /* when the DOM content of the page has been loaded, 
-  we attach event listeners to each of the buttons. */
-
+  we attach event listeners to each of the buttons. 
+  
+  Ensures use of the function to only run the code once all content has loaded
+   
+   */
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
-  document.querySelector('#compose-form').addEventListener('submit', send_mail);
+  document.querySelector('#compose').addEventListener('click', () => compose_email());
+  document.querySelector('form').onsubmit = () => send_mail();
+  
 
 
   // By default, load the inbox
@@ -63,7 +67,183 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  //open mailbox
+
+  if (mailbox === 'inbox') {
+    fetch('/emails/inbox')
+      .then(response => response.json())
+      .then(emails => {
+        // Print emails
+        console.log(emails);
+  
+        // Iterate over the emails array
+        for (let i = 0; i < emails.length; i++) {
+          const email = emails[i];
+          const id = email.id;
+          const to = email.recipients;
+          const from = email.sender;
+          const sub = email.subject;
+          const time = email.timestamp;
+          const read = email.read;
+          const archived = email.archived;
+
+          // Create an anchor element for the clickable link
+          const link = document.createElement('a');
+          link.href = '#'; // Set the desired link URL or leave it as '#' for now
+
+          // Create a div item for the email content
+          const contentDiv = document.createElement('div');
+          contentDiv.style.border = '1px solid black';
+          contentDiv.style.padding = '10px';
+          contentDiv.style.marginBottom = '10px';
+          contentDiv.style.color = 'black'
+
+          if(read.value === true){
+            contentDiv.style.backgroundColor = 'white'
+          }else{
+            contentDiv.style.backgroundColor = 'gray'
+          }
+  
+  
+          // Create elements for from, sub, and time
+          const fromContent = document.createElement('h4');
+          const subContent = document.createElement('h3');
+          const timeContent = document.createElement('h5');
+  
+          // Set the innerHTML of from, sub, and time elements
+          fromContent.innerHTML = `From: ${from}`;
+          subContent.innerHTML = `Subject: ${sub}`;
+          timeContent.innerHTML = `Time: ${time}`;
+  
+          // Append from, sub, and time elements to the contentDiv
+          contentDiv.appendChild(fromContent);
+          contentDiv.appendChild(subContent);
+          contentDiv.appendChild(timeContent);
+
+          // Append the contentDiv to the anchor element
+          link.appendChild(contentDiv);
+
+          
+
+          // Append the contentDiv to the desired container element
+          // For example, if you have a div with id "emailContainer", you can use:
+          // document.querySelector('#emails-view').append(contentDiv);
+          document.querySelector('#emails-view').append(link);
+        }
+      });
+  }else if(mailbox === 'sent') {
+    fetch('/emails/sent')
+      .then(response => response.json())
+      .then(emails => {
+        // Print emails
+        console.log(emails);
+  
+        // Iterate over the emails array
+        for (let i = 0; i < emails.length; i++) {
+          const email = emails[i];
+          const id = email.id;
+          const to = email.recipients;
+          const from = email.sender;
+          const sub = email.subject;
+          const time = email.timestamp;
+          const read = email.read;
+          const archived = email.archived;
+  
+          // Create an anchor element for the clickable link
+          const link = document.createElement('a');
+          link.href = '#'; // Set the desired link URL or leave it as '#' for now
+
+
+          // Create a div item for the email content
+          const contentDiv = document.createElement('div');
+          contentDiv.style.border = '1px solid black';
+          contentDiv.style.padding = '10px';
+          contentDiv.style.marginBottom = '10px';
+  
+  
+          // Create elements for to, sub, and time
+          const toContent = document.createElement('h4');
+          const subContent = document.createElement('h3');
+          const timeContent = document.createElement('h5');
+  
+          // Set the innerHTML of to, sub, and time elements
+          toContent.innerHTML = `to: ${to}`;
+          subContent.innerHTML = `Subject: ${sub}`;
+          timeContent.innerHTML = `Time: ${time}`;
+  
+          // Append to, sub, and time elements to the contentDiv
+          contentDiv.appendChild(toContent);
+          contentDiv.appendChild(subContent);
+          contentDiv.appendChild(timeContent);
+  
+          // Append the contentDiv to the anchor element
+          link.appendChild(contentDiv);
+
+          // Append the contentDiv to the desired container element
+          // For example, if you have a div with id "emailContainer", you can use:
+          // document.querySelector('#emails-view').append(contentDiv);
+          document.querySelector('#emails-view').append(link);
+        }
+      });
+  }else if(mailbox === 'archived') {
+    fetch('/emails/archived')
+      .then(response => response.json())
+      .then(emails => {
+        // Print emails
+        console.log(emails);
+  
+        // Iterate over the emails array
+        for (let i = 0; i < emails.length; i++) {
+            const email = emails[i];
+            if(email.archived.value === true){
+              const id = email.id;
+              const to = email.recipients;
+              const from = email.sender;
+              const sub = email.subject;
+              const time = email.timestamp;
+              const read = email.read;
+              const archived = email.archived;
+
+              // Create an anchor element for the clickable link
+              const link = document.createElement('a');
+              link.href = '#'; // Set the desired link URL or leave it as '#' for now
+      
+              // Create a div item for the email content
+              const contentDiv = document.createElement('div');
+              contentDiv.style.border = '1px solid black';
+              contentDiv.style.padding = '10px';
+              contentDiv.style.marginBottom = '10px';
+      
+      
+              // Create elements for from, sub, and time
+              const fromContent = document.createElement('h4');
+              const subContent = document.createElement('h3');
+              const timeContent = document.createElement('h5');
+      
+              // Set the innerHTML of from, sub, and time elements
+              fromContent.innerHTML = `from: ${from}`;
+              subContent.innerHTML = `Subject: ${sub}`;
+              timeContent.innerHTML = `Time: ${time}`;
+      
+              // Append from, sub, and time elements from the contentDiv
+              contentDiv.appendChild(fromContent);
+              contentDiv.appendChild(subContent);
+              contentDiv.appendChild(timeContent);
+      
+              // Append the contentDiv to the anchor element
+              link.appendChild(contentDiv);
+
+              // Append the contentDiv to the desired container element
+              // For example, if you have a div with id "emailContainer", you can use:
+              // document.querySelector('#emails-view').append(contentDiv);
+              document.querySelector('#emails-view').append(link);
+            }
+        }
+      });
+    }
 }
+
 
 
 /* 
@@ -74,11 +254,31 @@ Make a POST request to /emails, passing in values for recipients, subject, and b
 Once the email has been sent, load the user’s sent mailbox.
 */
 function send_mail(){
-  alert('sending')
-  const from = request.user.email;
-  alert('Sending Email from:' + from.value)
+  // alert('sending')
   const to = document.querySelector('#compose-recipients').value;
   const subject = document.querySelector('#compose-subject').value;
   const body = document.querySelector('#compose-body').value;
+  console.log(to);
+  console.log(subject);
+  console.log(body);
+  
+  // Send post request to upload new email
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: to,
+        subject: subject,
+        body: body
+    })
+  })
+  // Put response into json form
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(result);
+      alert(JSON.stringify(result))
+  });
+
+  return false;
 
 }
