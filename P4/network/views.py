@@ -92,12 +92,10 @@ def compose(request):
     # Check recipient post
     data = json.loads(request.body)
     content = data.get("content", "")
-    timestamp = data.get("content", "")
     user = request.user
 
     post = Post(
         content = content,
-        timestamp = timestamp,
         user = user
     )
 
