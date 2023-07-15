@@ -42,13 +42,16 @@
 
     fetch('/posts/all_posts')
       .then(response => response.json())
-      .then(posts => {
-        console.log(posts)
+      .then(data => {
+        const posts = data.posts;
+        const likes = data.likes;
         for (let i = 0; i < posts.length; i++) {
           const post = posts[i];
+          const postId = post.id;
           const user = post.user;
           const content = post.content;
           const timestamp = post.timestamp;
+          const likeCount = likes[postId] || 0; // If likes[postId] is undefined, default to 0 likes
 
           // Create an anchor element for the clickable link
           const link = document.createElement('a');
@@ -65,16 +68,19 @@
           const userContent = document.createElement('h4');
           const contentContent = document.createElement('h3');
           const timeContent = document.createElement('h5');
+          const likeCountElement = document.createElement('p');
 
           // Set the innerHTML of from, sub, and time elements
           userContent.innerHTML = `Author: ${JSON.stringify(user.username)}`;
           contentContent.innerHTML = `Content: ${content}`;
+          likeCountElement.innerHTML = `Likes: ${likeCount}`;
           timeContent.innerHTML = `Time: ${timestamp}`;
   
           // Append from, sub, and time elements to the contentDiv
           contentDiv.appendChild(userContent);
           contentDiv.appendChild(contentContent);
           contentDiv.appendChild(timeContent);
+          contentDiv.appendChild(likeCountElement);
 
           // Append the contentDiv to the anchor element
           link.appendChild(contentDiv);

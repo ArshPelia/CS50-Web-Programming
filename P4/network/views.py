@@ -107,4 +107,13 @@ def compose(request):
 def all_posts(request):
     posts = Post.objects.all()
     posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+
+    # Get the number of likes for each post
+    likes = {}
+    for post in posts:
+        like_count = Like.objects.filter(post=post, is_liked=True).count()
+        likes[post.id] = like_count
+
+    # Serialize the posts and likes data
+    serialized_posts = [post.serialize() for post in posts]
+    return JsonResponse({'posts': serialized_posts, 'likes': likes}, safe=False)
