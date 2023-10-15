@@ -156,7 +156,7 @@ def open_listing(request, listid):
         "cat": target.get_cat_display,
         "form": OpenBidForm(),
         "watchlisted": watchlisted,
-        "owner": owner
+        # "owner": owner
     })
 
     
