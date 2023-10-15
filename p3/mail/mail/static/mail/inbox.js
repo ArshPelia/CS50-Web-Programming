@@ -67,6 +67,8 @@ async function load_mailbox(mailbox) {
 
         // Create a div item for the email content
         const contentDiv = document.createElement('div');
+        contentDiv.classList.add('email-item');
+        
         
         if(read === true){
           contentDiv.style.backgroundColor = 'white'
