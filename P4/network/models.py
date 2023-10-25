@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     followers = models.ManyToManyField('self', symmetrical=False,
-                                       blank=True, related_name='followers')
+                                       blank=True)
 
     def count_followers(self):
         return self.followers.count()
